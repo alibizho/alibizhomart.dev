@@ -22,7 +22,8 @@ function App() {
       })
       .catch(error => console.error('Error fetching data:', error));
   }, []);
-
+  
+  
   return (
     <div className='main-container'>
       <Router>
