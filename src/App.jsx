@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Navbar from './Components/Navbar.jsx';
-import GitProject from './Components/GitProject.jsx';
-import Tech from './Components/Tech.jsx';
 import Footer from './Components/Footer.jsx';
 import Home from './pages/Home.jsx'; // create this component
 import Contact from './pages/Contact.jsx'; // create this component
@@ -16,7 +14,7 @@ function App() {
       .then(response => response.json())
       .then(data => {
         if (Array.isArray(data)) {
-          const filteredRepos = data.filter(repo => repo.description && repo.language);
+          const filteredRepos = data.filter(repo => repo.description && repo.language).slice(0, 4);
           setRepos(filteredRepos);
         } else {
           console.error('Unexpected response format:', data);
