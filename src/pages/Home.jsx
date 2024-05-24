@@ -9,15 +9,15 @@ function Home({ repos }) {
         <h1>Hi, I'm Alibi 👋</h1>
         <p className="p-text">
           Computer Science student, software engineer, full-stack dev, language enthusiast 
-          who loves challenging problems. Let's create excellence together!
+          who loves challenging problems.
         </p>
       </div>
       
       <div className='container'>
         <h2>💼 projects</h2>
         <p>
-          During free time I love to create side projects from small 
-          tools to make life easier to platforms to help 
+          During my free time I love to create side projects from small 
+          tools that make life easier to platforms which help 
           my local communities.
         </p>
         <div className='project-repos'>

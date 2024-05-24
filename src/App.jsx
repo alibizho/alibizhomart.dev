@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Navbar from './Components/Navbar.jsx';
 import Footer from './Components/Footer.jsx';
-import Home from './pages/Home.jsx'; // create this component
-import Contact from './pages/Contact.jsx'; // create this component
+import Home from './pages/Home.jsx'; 
+import Contact from './pages/Contact.jsx'; 
 import "./assets/css/App.css";
 
 function App() {
