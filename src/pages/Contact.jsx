@@ -9,78 +9,110 @@ import 'react-toastify/dist/ReactToastify.css';
 function Contact() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [xianTemp, setXianTemp] = useState('');
-  const [xianIcon, setXianIcon] = useState('');
-  const [xianTime, setXianTime] = useState('');
-  const xianDateTimeRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useRef();
-  const [isAwake, setIsAwake] = useState(false);
-  const serviceKey = import.meta.env.VITE_API_EMAIL_SERVICE;
-  const templateKey = import.meta.env.VITE_API_EMAIL_TEMPLATE
-  const emailKey = import.meta.env.VITE_API_EMAIL_KEY
-  const weatherKey = import.meta.env.VITE_API_WEATHER_KEY
 
-  const handleSubmit = (e) => {
+  const [xianWeather, setXianWeather] = useState({
+    temp: '',
+    icon: null,
+    time: '',
+    isAwake: false
+  });
+
+  const { 
+    VITE_API_EMAIL_SERVICE: serviceKey,
+    VITE_API_EMAIL_TEMPLATE: templateKey,
+    VITE_API_EMAIL_KEY: emailKey,
+    VITE_API_WEATHER_KEY: weatherKey
+  } = import.meta.env;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    emailjs
-      .sendForm(serviceKey, templateKey, form.current, {
-        publicKey: emailKey,
-      })
-      .then(
-        () => {
-          toast.success('Email sent successfully!');
-        },
-        (error) => {
-          toast.error(`Failed to send email`);
-        }
+    if (isSubmitting) {
+      toast.warning('Please wait before sending another message');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await emailjs.sendForm(
+        serviceKey, 
+        templateKey, 
+        form.current, 
+        { publicKey: emailKey }
       );
+      toast.success('Email sent successfully!');
+      setEmail('');
+      setMessage('');
+      
+      setTimeout(() => setIsSubmitting(false), 30000);
+    } catch (error) {
+      toast.error('Failed to send email');
+      setIsSubmitting(false);
+    }
   };
 
-  const getWeatherIcon = (condition) => {
-    if (condition.includes('Sunny') || condition.includes('Clear')) return <IoSunny size={50} />;
-    if (condition.includes('Snow')) return <IoSnow size={50} />;
-    if (condition.includes('Cloud')) return <IoCloud size={50} />;
-    if (condition.includes('Rain')) return <IoRainy size={50} />;
-    if (condition.includes('Thunderstorm')) return <IoThunderstorm size={50} />;
-    return <IoPartlySunny size={50} />;
+  const getWeatherIcon = (condition, isNight) => {
+    const conditions = {
+      'Sunny': isNight ? <IoPartlySunny size={50} /> : <IoSunny size={50} />,
+      'Clear': isNight ? <IoPartlySunny size={50} /> : <IoSunny size={50} />,
+      'Snow': <IoSnow size={50} />,
+      'Cloud': <IoCloud size={50} />,
+      'Rain': <IoRainy size={50} />,
+      'Thunderstorm': <IoThunderstorm size={50} />,
+    };
+
+    return Object.entries(conditions).find(([key]) => 
+      condition.includes(key))?.[1] || <IoPartlySunny size={50} />;
   };
 
   useEffect(() => {
     const fetchWeatherData = async () => {
       try {
-        const xianResponse = await axios.get(
+        const response = await axios.get(
           `https://api.weatherapi.com/v1/current.json?key=${weatherKey}&q=Xian`
         );
-        const xianWeather = xianResponse.data;
-        setXianTemp(`${xianWeather.current.temp_c}°C`);
-        setXianIcon(getWeatherIcon(xianWeather.current.condition.text));
-        xianDateTimeRef.current = new Date(xianWeather.location.localtime);
+        
+        const { current } = response.data;
 
-        const hour = xianDateTimeRef.current.getHours();
-        setIsAwake(hour >= 7 && hour < 23);
+        const updateXianTime = () => {
+          const currentXianTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Shanghai"}));
+          const hour = currentXianTime.getHours();
+
+          setXianWeather(prev => ({
+            ...prev,
+            time: currentXianTime.toLocaleTimeString('en-GB', { 
+              hour12: false, 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            }),
+            isAwake: hour >= 7 && hour < 22,
+            icon: getWeatherIcon(current.condition.text, hour >= 18 || hour < 6)
+          }));
+        };
+
+        setXianWeather({
+          temp: `${current.temp_c}°C`,
+          icon: null,
+          time: '',
+          isAwake: false
+        });
+
+        updateXianTime();
+        const timeInterval = setInterval(updateXianTime, 60000);
+        return () => clearInterval(timeInterval);
       } catch (error) {
-        console.error('Error fetching weather data', error);
+        console.error('Error fetching weather data:', error);
       }
     };
 
     fetchWeatherData();
+    const weatherInterval = setInterval(fetchWeatherData, 300000);
 
-    const updateTimes = () => {
-      const now = new Date();
-
-      if (xianDateTimeRef.current) {
-        const xianTimeElapsed = now.getTime() - xianDateTimeRef.current.getTime();
-        const updatedXianTime = new Date(xianDateTimeRef.current.getTime() + xianTimeElapsed);
-        setXianTime(updatedXianTime.toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit' }));
-      }
-    };
-
-    const interval = setInterval(updateTimes, 1000);
-    updateTimes(); 
-
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(weatherInterval);
+  }, [weatherKey]);
 
   return (
     <div className='container-contacts'>
@@ -109,21 +141,24 @@ function Contact() {
               required
             />
           </div>
-          <button type='submit'>submit</button>
+          <button type='submit' disabled={isSubmitting}>
+            {isSubmitting ? 'please wait...' : 'submit'}
+          </button>
         </form>
+
         <div className='weather-container'>
           <div className='weather-container-inner'>
             <div className='weather-container-user'>
               <h3>Xi'an</h3>
-              {xianIcon}
-              <h3>{xianTime}</h3>
+              {xianWeather.icon}
+              <h3>{xianWeather.time}</h3>
             </div>
           </div>
-          {isAwake ? (
-            <h4>I am awake at this time, so I will try to respond as quickly as possible to your message!</h4>
-          ) : (
-            <h4>I am asleep at this time. I'll respond to your message as soon as I wake up!</h4>
-          )}
+          <h4>
+            {xianWeather.isAwake 
+              ? "I am awake at this time, so I will try to respond as quickly as possible to your message!"
+              : "I am asleep at this time. I'll respond to your message as soon as I wake up!"}
+          </h4>
         </div>
       </div>
     </div>

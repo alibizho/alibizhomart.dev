@@ -10,12 +10,23 @@ function App() {
   const [repos, setRepos] = useState([]);
 
   useEffect(() => {
+    const cachedRepos = localStorage.getItem('githubRepos');
+    const cachedTimestamp = localStorage.getItem('githubReposTimestamp');
+    const ONE_HOUR = 60 * 60 * 1000; // 1 hour in milliseconds
+
+    if (cachedRepos && cachedTimestamp && (Date.now() - Number(cachedTimestamp)) < ONE_HOUR) {
+      setRepos(JSON.parse(cachedRepos));
+      return;
+    }
+
     fetch('https://api.github.com/users/alibizho/repos')
       .then(response => response.json())
       .then(data => {
         if (Array.isArray(data)) {
           const filteredRepos = data.filter(repo => repo.description && repo.language).slice(0, 4);
           setRepos(filteredRepos);
+          localStorage.setItem('githubRepos', JSON.stringify(filteredRepos));
+          localStorage.setItem('githubReposTimestamp', Date.now().toString());
         } else {
           console.error('Unexpected response format:', data);
         }
