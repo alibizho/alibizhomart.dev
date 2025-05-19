@@ -1,6 +1,13 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import '../assets/css/Contacts.css';
-import { IoSnow, IoSunny, IoCloud, IoRainy, IoThunderstorm, IoPartlySunny } from 'react-icons/io5';
+import {
+  IoSnow,
+  IoSunny,
+  IoCloud,
+  IoRainy,
+  IoThunderstorm,
+  IoPartlySunny
+} from 'react-icons/io5';
 import emailjs from '@emailjs/browser';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,6 +26,7 @@ export default function Contact() {
   const weather = useContext(WeatherContext);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef();
   const [time, setTime] = useState('');
 
@@ -28,8 +36,12 @@ export default function Contact() {
     const update = () => {
       const now = new Date();
       const diff = now - local;
-      setTime(new Date(local.getTime() + diff)
-        .toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit' })
+      setTime(
+        new Date(local.getTime() + diff).toLocaleTimeString('en-GB', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit'
+        })
       );
     };
     update();
@@ -37,24 +49,32 @@ export default function Contact() {
     return () => clearInterval(id);
   }, [weather]);
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    emailjs.sendForm(
-      import.meta.env.VITE_API_EMAIL_SERVICE,
-      import.meta.env.VITE_API_EMAIL_TEMPLATE,
-      formRef.current,
-      import.meta.env.VITE_API_EMAIL_KEY
-    )
-    .then(() => toast.success('Email sent!'))
-    .catch(() => toast.error('Send failed'));
+    setIsSubmitting(true);
+    try {
+      await emailjs.sendForm(
+        import.meta.env.VITE_API_EMAIL_SERVICE,
+        import.meta.env.VITE_API_EMAIL_TEMPLATE,
+        formRef.current,
+        import.meta.env.VITE_API_EMAIL_KEY
+      );
+      toast.success('Email sent!');
+      setEmail('');
+      setMessage('');
+    } catch (err) {
+      toast.error('Send failed');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  if (!weather) return <div className='container-contacts'><p>Loading weather...</p></div>;
+  if (!weather) {
+    return <div className='container-contacts'><p>Loading weather...</p></div>;
+  }
 
-  const isAwake = (() => {
-    const hr = Number(time.split(':')[0]);
-    return hr >= 7 && hr < 23;
-  })();
+  const hour = Number(time.split(':')[0]);
+  const isAwake = hour >= 7 && hour < 23;
 
   return (
     <div className='container-contacts'>
@@ -64,24 +84,40 @@ export default function Contact() {
         <form ref={formRef} onSubmit={handleSubmit}>
           <div className='form-group'>
             <label htmlFor='email'>your email</label>
-            <input type='email' name='user_email' id='email' value={email} onChange={e => setEmail(e.target.value)} required />
+            <input
+              type='email'
+              name='user_email'
+              id='email'
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div className='form-group'>
             <label htmlFor='message'>message</label>
-            <textarea name='message' id='message' value={message} onChange={e => setMessage(e.target.value)} required />
+            <textarea
+              name='message'
+              id='message'
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              required
+            />
           </div>
           <button type='submit' disabled={isSubmitting}>
-            {isSubmitting ? 'please wait...' : 'submit'}
+            {isSubmitting ? 'Please wait...' : 'Submit'}
           </button>
         </form>
-
         <div className='weather-container'>
           <div className='weather-container-user'>
             <h3>Xi'an</h3>
             {getWeatherIcon(weather.condition)}
             <h3>{time}</h3>
           </div>
-          <h4>{isAwake ? 'I am awake at this time, so I will try to respond as quickly as possible to your message!' : " am asleep at this time. I'll respond to your message as soon as I wake up!"}</h4>
+          <h4>
+            {isAwake
+              ? 'I am awake at this time, so I will try to respond as quickly as possible to your message!'
+              : "I am asleep at this time. I'll respond to your message as soon as I wake up!"}
+          </h4>
         </div>
       </div>
     </div>

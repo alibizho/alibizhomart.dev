@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './Components/Navbar.jsx';
 import Footer from './Components/Footer.jsx';
 import Home from './pages/Home.jsx';
-import { WeatherProvider } from './WeatherContext.jsx';
+import { WeatherProvider } from './Components/WeatherContext.jsx';
 import './assets/css/App.css';
 
 const Contact = lazy(() => import('./pages/Contact.jsx'));
@@ -30,17 +30,12 @@ function App() {
     <WeatherProvider>
       <div className='main-container'>
         <Navbar />
-        <Routes>
-          <Route path='/' element={<Home repos={repos} />} />
-          <Route
-            path='/contact'
-            element={
-              <Suspense fallback={<div>Loading contact...</div>}>
-                <Contact />
-              </Suspense>
-            }
-          />
-        </Routes>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path='/' element={<Home repos={repos} />} />
+            <Route path='/contact' element={<Contact />} />
+          </Routes>
+        </Suspense>
         <Footer />
       </div>
     </WeatherProvider>
