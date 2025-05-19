@@ -9,7 +9,6 @@ function Navbar() {
     });
 
     useEffect(() => {
-        // Apply theme class to body element
         document.body.classList.toggle('light', theme === 'light');
     }, [theme]);
 

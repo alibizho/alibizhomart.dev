@@ -70,8 +70,11 @@ export default function Contact() {
             <label htmlFor='message'>message</label>
             <textarea name='message' id='message' value={message} onChange={e => setMessage(e.target.value)} required />
           </div>
-          <button type='submit'>submit</button>
+          <button type='submit' disabled={isSubmitting}>
+            {isSubmitting ? 'please wait...' : 'submit'}
+          </button>
         </form>
+
         <div className='weather-container'>
           <div className='weather-container-user'>
             <h3>Xi'an</h3>

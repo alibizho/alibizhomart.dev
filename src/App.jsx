@@ -12,12 +12,14 @@ function App() {
   const [repos, setRepos] = useState([]);
 
   useEffect(() => {
-    const fetchRepos = async () => {
-      try {
-        const res = await fetch('https://api.github.com/users/alibizho/repos');
-        const data = await res.json();
+    fetch('https://api.github.com/users/alibizho/repos')
+      .then(response => response.json())
+      .then(data => {
         if (Array.isArray(data)) {
-          setRepos(data.filter(r => r.description && r.language).slice(0, 4));
+          const filteredRepos = data.filter(repo => repo.description && repo.language).slice(0, 4);
+          setRepos(filteredRepos);
+        } else {
+          console.error('Unexpected response format:', data);
         }
       } catch (err) {
         console.error(err);
