@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 
+html {
+  scroll-behavior: smooth;
+}
+
 body{
   padding:0;
   margin:0;
@@ -13,7 +17,8 @@ body{
   font-family: "Poppins", sans-serif;
   background-color: #171717;
   color: #FFFFFF;
-  
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 
@@ -26,6 +31,18 @@ body{
   height:100%;
   flex-direction: column;
   gap:24px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
@@ -34,6 +51,8 @@ body{
   display: flex;
   flex-direction: column;
   align-self: center;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease-out 0.1s both;
 }
 
 .container-intro h1{
@@ -54,6 +73,8 @@ body{
   display: flex;
   flex-direction: column;
   align-self: center;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
 }
 .container h2{
   margin:0; 
@@ -83,6 +104,15 @@ body{
   display: flex;
   align-items: center;
   gap:5px;
+  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: default;
+}
+
+.tech-part:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
 }
 .tech-part h4{
   margin: 0;
@@ -98,7 +128,7 @@ body{
   grid-template-rows: repeat(2, auto);
   gap: 1rem;
   justify-content: center;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
   justify-items: center;
 }
 
@@ -118,7 +148,7 @@ body.light {
   .techs{
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(1, auto);
-    justify-items: start;
+    justify-items: center;
   }
   .container-intro{
     width:50%;

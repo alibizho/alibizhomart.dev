@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../assets/css/Footer.css';
-import { AiFillMail, AiFillWechat, AiFillInstagram } from 'react-icons/ai';
+import { AiFillMail, AiFillWechat, AiFillLinkedin } from 'react-icons/ai';
 import wechatQR from '../assets/wechatqr.jpg';
 import ImageModal from './ImageModal';
 
@@ -15,10 +15,7 @@ function Footer() {
           <h2>Computer Science Student & Software Engineer</h2>
         </div>
         <div className='footer-contacts'>
-          <a href='https://www.instagram.com/zhomartalibi/' className="footer-contact-item">
-            <AiFillInstagram size={20} />
-            <h4>zhomartalibi</h4>
-          </a>
+
           <div 
             className="footer-contact-item" 
             onClick={() => setShowModal(true)}
@@ -27,6 +24,15 @@ function Footer() {
             <AiFillWechat size={20} />
             <h4>周传正</h4>
           </div>
+
+
+          <a href='https://www.linkedin.com/in/alibi-zhomart' className="footer-contact-item">
+            <AiFillLinkedin size={20} />
+            <h4>Alibi Zhomart</h4>
+          </a>
+          
+          
+
           <a href='mailto:zhomart.alibi.kz@gmail.com' className="footer-contact-item">
             <AiFillMail size={20} />
             <h4>zhomart.alibi.kz@gmail.com</h4>

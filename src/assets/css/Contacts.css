@@ -1,9 +1,21 @@
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .container-contacts {
   width: 70%;
   display: flex;
   flex-direction: column;
   align-self: center;
   margin-bottom: 30px;
+  animation: fadeInUp 0.8s ease-out 0.1s both;
 }
 
 .container-contacts h2 {
@@ -47,6 +59,7 @@
   font-family: 'Poppins', sans-serif;
   outline: none;
   border-color: transparent;
+  transition: all 0.3s ease;
 }
 
 .container-contacts-in textarea {
@@ -57,6 +70,9 @@
 .container-contacts-in input:focus,
 .container-contacts-in textarea:focus {
   outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #5a5a5a;
+  transform: translateY(-1px);
 }
 
 .container-contacts-in button {
@@ -68,10 +84,13 @@
   background-color: #474646;
   color: rgba(255,255,255,0.7);
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .container-contacts-in button:hover {
   background-color: #3a3a3a;
+  transform: translateY(-2px);
+  opacity: 1;
 }
 
 .weather-container {
@@ -113,13 +132,24 @@ body.light .container-contacts-in input,
 body.light .container-contacts-in textarea {
   background-color: rgb(203 213 225 / .5);
   border-color: transparent;
+  color: black;
+}
+
+body.light .container-contacts-in input:focus,
+body.light .container-contacts-in textarea:focus {
+  background-color: rgb(203 213 225 / .7);
+  border-color: rgba(0, 0, 0, 0.3);
+  color: black;
+}
+
+body.light .form-group label {
+  color: black;
 }
 
 body.light .container-contacts-in button {
   background-color: rgb(203 213 225 / .5);
   color:black;
   opacity: 0.7;
-
 }
 
 

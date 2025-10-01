@@ -10,6 +10,7 @@ const Contact = lazy(() => import('./pages/Contact.jsx'));
 
 function App() {
   const [repos, setRepos] = useState([]);
+  const [reposLoading, setReposLoading] = useState(true);
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -21,6 +22,8 @@ function App() {
         }
       } catch (err) {
         console.error(err);
+      } finally {
+        setReposLoading(false);
       }
     };
     fetchRepos();
@@ -30,9 +33,9 @@ function App() {
     <WeatherProvider>
       <div className='main-container'>
         <Navbar />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div style={{ opacity: 0, minHeight: '400px' }}></div>}>
           <Routes>
-            <Route path='/' element={<Home repos={repos} />} />
+            <Route path='/' element={<Home repos={repos} reposLoading={reposLoading} />} />
             <Route path='/contact' element={<Contact />} />
           </Routes>
         </Suspense>

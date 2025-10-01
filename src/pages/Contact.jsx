@@ -28,16 +28,22 @@ export default function Contact() {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef();
-  const [time, setTime] = useState('');
+  const [time, setTime] = useState(() => {
+    // Initialize with current Beijing time
+    const beijingTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Shanghai"}));
+    return beijingTime.toLocaleTimeString('en-GB', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  });
 
   useEffect(() => {
-    if (!weather) return;
-    const local = new Date(weather.localtime.replace(' ', 'T'));
     const update = () => {
-      const now = new Date();
-      const diff = now - local;
+      // Get current Beijing time (UTC+8)
+      const beijingTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Shanghai"}));
       setTime(
-        new Date(local.getTime() + diff).toLocaleTimeString('en-GB', {
+        beijingTime.toLocaleTimeString('en-GB', {
           hour12: false,
           hour: '2-digit',
           minute: '2-digit'
@@ -47,7 +53,7 @@ export default function Contact() {
     update();
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
-  }, [weather]);
+  }, []);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -69,11 +75,7 @@ export default function Contact() {
     }
   };
 
-  if (!weather) {
-    return <div className='container-contacts'><p>Loading weather...</p></div>;
-  }
-
-  const hour = Number(time.split(':')[0]);
+  const hour = time ? Number(time.split(':')[0]) : 0;
   const isAwake = hour >= 7 && hour < 23;
 
   return (
@@ -115,7 +117,7 @@ export default function Contact() {
           </div>
           <h4>
             {isAwake
-              ? 'I am awake at this time, so I will try to respond as quickly as possible to your message!'
+              ? 'I am awake at this time, so I will try to respond as quickly as possible!'
               : "I am asleep at this time. I'll respond to your message as soon as I wake up!"}
           </h4>
         </div>
